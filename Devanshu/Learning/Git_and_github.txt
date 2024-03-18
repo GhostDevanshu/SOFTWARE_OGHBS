@@ -1,0 +1,92 @@
+Git ----
+
+Form of version control collaborative work platform
+
+1) Track history
+2) Collaboration
+
+Install Mac---
+Brew install git
+
+Configuring git---
+RUN
+git config --global user.name "GhostDevanshu"
+git config --global user.email "dev_iitkgp2022@kgpian.iitkgp.ac.in"
+git config --list
+
+Clone
+git clone <some-link> 
+
+Checking the status 
+git status
+
+Changing in git repo is a two step process      add -----> commit
+4 types of status
+Untracked -- new files
+Modified -- changed file
+Unmodified -- no change
+Staged ---   added but not committed
+
+Add --
+RUN
+git add <filename>
+
+
+Commit ---
+RUN
+git commit -m "some message"
+
+Push -- (put local repo content to remote repo)
+git push origin main
+# you can put -u flag in the command to make it a upstream so next time you don't need to specify the branch you are making changes to
+
+
+Making local repo and uploading it
+git init
+
+Add the repo to be uploaded to make sure it is empty
+git remote add origin <link>
+
+git remote -v (verify remote)
+
+To check branch
+git branch
+
+To rename a branch--
+git branch -M <new name>
+
+To create new branch
+Git checkout -b <new branch name>
+
+To navigate to a branch
+git checkout <branch name>
+
+
+Merging two branches
+git diff <second branch>
+git merge <second branch>
+
+2nd way
+Using GitHub using PR
+
+
+Getting all change from a remote repo to local repo (download and compares the two codes remote and local and updates local)
+git pull origin main 
+
+
+
+Undoing changes----
+STAGED CHANGES----
+git reset <filenames>
+git reset
+
+Committed changes----
+git reset HEAD~1 
+
+*TO SEE ALL COMMITS ----
+git log 
+
+git reset <commit-hash>
+git reset --hard <commit-hash> 
+
+FORK creates a new repository with dame files and setting the original repository onto our account (rough copy)

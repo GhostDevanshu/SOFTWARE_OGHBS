@@ -1,0 +1,12 @@
+------------------
+ERROR Faced while connecting to mongoldb database deployment----
+Steps to correct ---
+RUN 
+pip3 install Certifi
+/Application/Python\ 3.12/Install/ Certificate.command
+
+Also
+Add current IP to the deployment on chrome mongo atlas to be able to access it
+------------------
+
+

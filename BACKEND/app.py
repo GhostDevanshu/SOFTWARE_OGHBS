@@ -35,7 +35,7 @@ roomId = 0
 
 #CLASSES TO BE DEFINED
 class user:
-
+    
 class room:
 
 class Food_option:

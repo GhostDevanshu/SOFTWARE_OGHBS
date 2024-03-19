@@ -5,12 +5,16 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from datetime import datetime, timedelta
 
+
+# MAKING THE CONNECTION
 load_dotenv()
 app = Flask(__name__)
 
 DB_URI = os.getenv('DB_URI')
 client = MongoClient(DB_URI)
 
+
+#CHECKING THE CONNECTION
 try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
@@ -20,6 +24,7 @@ try:
 except ConnectionFailure as e:
     print("Could not connect to MongoDB: %s" % e)
 
+#DEFINING GLOABL VARIABLES TO BE USED FOR PROCESSING DURING RUNTIME
 curUserId = -1
 checkInDate = datetime.now()
 checkOutDate = datetime.now()
@@ -27,6 +32,21 @@ srt = '0'
 foodId = '0'
 availableOnly = '0'
 roomId = 0
+
+#CLASSES TO BE DEFINED
+class user:
+
+class room:
+
+class Food_option:
+
+class Booking_instance:
+
+class Auth_instance:
+
+
+
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -40,6 +60,10 @@ def hello_world():
     response["error"] = None
     response["results"] = {}
     return response
+
+
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)

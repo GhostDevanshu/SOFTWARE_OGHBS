@@ -1,0 +1,80 @@
+/* App.css */
+.App {
+  background-image: url('/src/Screenshot\ 2024-03-20\ at\ 12.11.43\ PM.png');
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+/* App.css */
+@keyframes announcement-move {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.announcement {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  white-space: nowrap; /* Prevent announcement from wrapping */
+  overflow: hidden; /* Hide overflowing content */
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: announcement-move 10s linear infinite; /* Adjust animation timing */
+}
+
+
+.login-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slide-in 0.5s ease-out;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.toggle-login {
+  text-align: center;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.toggle-login:hover {
+  text-decoration: underline;
+}

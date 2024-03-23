@@ -126,6 +126,7 @@ def logout():
     #return render_template('index.html')
     return "0"
 
+
 # START THE APP
 if __name__ == '__main__':
     app.run(debug=True, port=5002)

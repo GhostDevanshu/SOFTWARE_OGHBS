@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template,jsonify
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -35,7 +35,8 @@ booking_collection = db.booking_collection
 # GLOBAL AVRIABLES 
 
 cur_user = -1
-
+checkindate = datetime.now()
+checkoutdate = datetime.now()
 
 
 #HELPER FUNCTIONS
@@ -43,8 +44,6 @@ def has_numbers(inputString):
     return (bool(re.search(r'\d', inputString)))
 
 def isBlank (myString):
-    print(myString)
-    print(not (myString and myString.strip()))
     return not (myString and myString.strip())
 
 
@@ -54,8 +53,11 @@ def isBlank (myString):
 #ROUTE FOR CHECKING
 @app.after_request
 def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     global cur_user
     print(cur_user)
+
     return response
 
 # ROUTE TO CREATE A USER
@@ -102,21 +104,40 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     #if request.method == 'GET':
+    print("working")
     username = request.form["username"]
     password = request.form["password"]
     print(username)
     print(password)
+
+    if (isBlank(username) or isBlank(password)):
+        return "300"
+    
     if (user_collection.count_documents({"username": username}) == 0):
         #return render_template('login.html',status_code = 100)
+
+        # response = {
+        #     "status_code": "100"
+        # }
+        
         return "100"
+    
     probable_user = user_collection.find_one({"username" : username})
     if (password != probable_user["password"]):
         #return render_template('profile.html',status_code = 200)
+
+        # response = {
+        #     "status_code": "200"
+        # }
         return "200"
     else: 
         global cur_user
         cur_user = probable_user
         # return redirect(url_for('profile', userid = probable_user["_id"]))
+
+        # response = {
+        #     "status_code": "0"
+        # }
         return "0"
 
 @app.route('/logout',methods = ["GET"])
@@ -126,8 +147,20 @@ def logout():
     #return render_template('index.html')
     return "0"
 
+@app.route('/available',methods = ["GET"])
+def availability():
+    pass
+
+
+
+
+
+
+
+
+
 
 # START THE APP
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, host = "0.0.0.0",port=5002)
 

@@ -1,0 +1,5 @@
+node create-react-app <app-name>
+
+*node_modules --- all dependies live in this folder
+*public --- all files that are puclic
+*src --- that is the main folder to work in all components and all

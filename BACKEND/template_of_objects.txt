@@ -1,0 +1,67 @@
+User
+{
+    _id: ObjectId()
+    username: str
+    password: str
+    roll_no: str
+    age: int
+    gender: str
+    address: str
+    booking_ids : [str]
+}
+
+food
+{
+    _id: ObjectId()
+    description: str
+    Price: int
+}
+
+Guest House
+{
+    _id: ObjectId()
+    name: str
+    address: str
+    description: str
+    rooms: {
+        room _id(str) : total no of rooms
+    }
+    prev_bookings: {
+        date: {
+            rooms:{
+                room _id(str) : total no of rooms left for that date
+            }
+        }
+    }
+}
+
+room
+{
+    _id: ObjectId()
+    name: str
+    description: str
+    AC: bool
+    Price_per_day: int
+    floor: int
+    Occupancy: str
+}
+
+booking
+{
+    _id: ObjectId()
+    name_of_the_individual: str
+    gender: str
+    relation: str
+    checkindate: str
+    checkoutdate: str
+    confirmation_status: str
+    payment_details: {
+        card_no: str,
+        expiration_month: str,
+        name_on_card: str,
+        cvv: int
+    }
+    payment_status: str
+    feedback:
+
+}

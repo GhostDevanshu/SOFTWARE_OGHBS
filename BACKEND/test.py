@@ -60,10 +60,11 @@
 
 
 
-import re
-def has_numbers(inputString):
-    return (not bool(re.search(r'\d', inputString)))
+# import re
+# def has_numbers(inputString):
+#     return (not bool(re.search(r'\d', inputString)))
 
-print(has_numbers("I own 1 dog"))
-print(has_numbers("I own no dog"))
+# print(has_numbers("I own 1 dog"))
+# print(has_numbers("I own no dog"))
 
+import datetime

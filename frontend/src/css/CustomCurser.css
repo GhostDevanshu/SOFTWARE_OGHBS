@@ -1,0 +1,20 @@
+.custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background-color: rgb(85, 234, 55); /* Example color, customize as needed */
+    border-radius: 50%;
+    pointer-events: none; /* Ensure the cursor doesn't interfere with mouse events */
+    animation: cursorAnimation 0.5s infinite alternate; /* Example animation */
+    z-index: 9999; /* Ensure the cursor appears on top of other elements */
+  }
+  
+  @keyframes cursorAnimation {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.2);
+    }
+  }
+  

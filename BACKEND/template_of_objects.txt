@@ -20,11 +20,11 @@ food
 Guest House
 {
     _id: ObjectId()
+    code: str
     name: str
     address: str
-    description: str
     rooms: {
-        room _id(str) : total no of rooms
+        room code(str) : total no of rooms
     }
     prev_bookings: {
         date: {
@@ -64,4 +64,15 @@ booking
     payment_status: str
     feedback:
 
+}
+
+
+//FORMAT FOR RESPONSE
+
+{
+    status: int
+    message: str
+    data: {
+        dict
+    }
 }

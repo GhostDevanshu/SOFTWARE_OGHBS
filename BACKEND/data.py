@@ -47,24 +47,24 @@ food_options_list = [
 ]
 
 rooms = [
-    {
-        "name": "Dormitory Beds AC",
-        "description": "Dormitory Beds rooms with AC facility available",
+    {   
+        "code": "DR AC",
+        "description": "Dormitory rooms with AC facility available",
         "AC": 1,
         "Price_per_day": 2000,
         "floor": 0,
         "Occupancy": 1
     },
-    {
-        "name": "Dormitory Beds NAC",
-        "description": "Dormitory Beds rooms with no AC facility available",
+    {   
+        "code": "DR NAC",
+        "description": "Dormitory rooms with no AC facility available",
         "AC": 0,
         "Price_per_day": 1500,
         "floor": 1,
         "Occupancy": 1
     },
     {
-        "name": "Suite Rooms",
+        "code": "SR AC",
         "description": "Special rooms available with high amounts of facilities available",
         "AC": 1,
         "Price_per_day": 3000,
@@ -72,7 +72,7 @@ rooms = [
         "Occupancy": 1
     },
     {
-        "name": "Double Beds NAC",
+        "code": "DBS NAC",
         "description": "Rooms equiped with double beds with no AC facility",
         "AC": 0,
         "Price_per_day": 2500,
@@ -80,7 +80,7 @@ rooms = [
         "Occupancy": 2
     },
     {
-        "name": "Double Beds AC",
+        "code": "DBS AC",
         "description": "Rooms equiped with double beds with AC facility",
         "AC": 1,
         "Price_per_day": 3500,
@@ -89,11 +89,83 @@ rooms = [
     }
     ]
 
-room_id = []
+guest_houses = [
+    {
+        "code" : "TGH",
+        "name" : "Technology Guest House",
+        "address": "IIT, Guest House Rd, IIT Kharagpur, Kharagpur, West Bengal 721302, India",
+        "email": "tgh@hijli.iitkgp.ernet.in",
+        "contact": "+ 91-3222-282800",
+        "rooms": {
+            "DR AC" : 3,
+            "DR NAC" : 6,
+            "DBS AC" : 2
+        },
+        "prev_bookings":{
+
+        }
+    },
+    {
+        "code" : "VGH",
+        "name" : "Visveswaraya Guest House",
+        "address": "IIT Kharagpur Campus Kharagpur 721302",
+        "email": "vgh@hijli.iitkgp.ac.in",
+        "contact": "+ 91-3222-282880",
+        "rooms": {
+            "DR AC" : 3,
+            "DBS NAC" : 6,
+            "DBS AC" : 2
+        },
+        "prev_bookings":{
+
+        }
+    },
+    {
+        "code" : "KGH",
+        "name" : "Kolkata Guest House",
+        "address": "IIT Kharagpur Kolkata Campus,HC Block, Sector – III,Salt Lake City,Kolkata – 700106",
+        "email": "tgh@hijli.iitkgp.ernet.in",
+        "contact": "+ 91-3222-282834",
+        "rooms": {
+            "DR AC" : 3,
+            "DR NAC" : 6,
+            "DBS AC" : 2
+        },
+        "prev_bookings":{
+
+        }
+    },
+]
+
+admin = {
+    "username": "admin",
+    "password": "admin"
+}
 
 if (food_options.count_documents({}) == 0):
     food_options.insert_many(food_options_list)
 
 if (room_collection.count_documents({}) == 0):
-    print("working")
-    room_id = room_collection.insert_many(rooms).inserted_ids
+    room_collection.insert_many(rooms)
+
+if (guest_house_collections.count_documents({}) == 0):
+    guest_house_collections.insert_many(guest_houses)
+
+if (user_collection.count_documents({}) == 0):
+    user_collection.insert_one(admin)
+
+for guest_house in guest_house_collections.find({}):
+    print(guest_house)
+    print(type(guest_house))
+    print(type(guest_house["rooms"]))
+
+# test space
+    
+prev_bookings = {
+    "2024-03-29":{
+        "DBS AC": 0,
+        "DBS NAC": 0,
+        "DR AC": 0
+    }
+}
+guest_house_collections.update_one({"code":"VGH"},{'$set': {'prev_bookings': prev_bookings}})

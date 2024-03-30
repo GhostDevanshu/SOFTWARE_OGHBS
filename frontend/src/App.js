@@ -1,42 +1,57 @@
 // App.js
 import React from 'react';
 import './App.css';
-import Home from './Home';
-import Login from './Login';
-import SignUp from './SignUp';
-import Navbar from './Navbar';
+import Home from './components/Home';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import Navbar from './components/Navbar';
 import SuccessLogin from './components/SuccessLogin';
 import {  createBrowserRouter,RouterProvider } from "react-router-dom";
-import About from './About';
-
+import About from './components/About';
+import Profile from './components/Profile';
+import UserNavbar from './UserNavbar';
+import { useUser } from './components/context';
 function App() {
+  
+  // const {info} =useUser();
+  const info = {
+    first_name:"abc",
+    last_name:"abc@abc",
+    race:"abc"
+  }
   const router =createBrowserRouter([
+    
    {
     path: '/',
-    element :<Home></Home>
+    element :<div><Navbar /><Home /></div>
    },
    {
     path: '/login',
-    element :<Login></Login>
+    element :<div><Navbar /><Login /></div>
    },
    {
     path: '/signup',
-    element :<SignUp></SignUp>
+    element :<div><Navbar /><SignUp /></div>
    },
    {
     path: '/about',
-    element:<About></About>
+    element:<div><Navbar /><About /></div>
    },
    {
-    path:'/succeslogin',
-    element:<SuccessLogin></SuccessLogin>
+    
+    path:'/loginsuccess',
+    element:<div><UserNavbar userinfo={info} /><SuccessLogin userinfoafterlogin= {info} /></div>
+   },
+   {
+    path:'/profile',
+    element:<div><UserNavbar userinfo={info}/><Profile /></div>
    }
   ])
   return (
     <div>
-    <Navbar></Navbar>
     <RouterProvider router={router}></RouterProvider>
     </div>
+
   );
 }
 

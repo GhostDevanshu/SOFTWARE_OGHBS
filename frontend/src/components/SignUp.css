@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 109vh;
 }
 
 .Sign-container {
@@ -11,6 +11,7 @@
   padding: 20px;
   border-radius: 10px;
   width: 40vh;
+  height: 100vh;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   animation: slide-in 0.5s ease-out;
 }
@@ -44,8 +45,8 @@ input {
 }
 
 .signupbutton {
-  padding: 10px;
-  background-color: #007bff;
+  padding: 5px;
+  background-color: #2178d4;
   color: white;
   border: none;
   border-radius: 5px;

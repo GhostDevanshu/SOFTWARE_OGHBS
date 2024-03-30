@@ -1,0 +1,11 @@
+useEffect(() => {
+  axios
+    .get('http://10.145.215.252:5002/profile')
+    .then((res) => {
+      console.log(res);
+      setperson(res.data.data)
+    })
+    .catch((err) => {
+    });
+}, []);
+get request first time 

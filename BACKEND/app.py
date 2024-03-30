@@ -47,8 +47,6 @@ def isBlank (myString):
     return not (myString and myString.strip())
 
 def update_system():
-    curr_date = datetime.now()
-
     bookings = booking_collection.find()
     
     for booking in bookings:
@@ -130,7 +128,7 @@ def hello_world():
 def register():
     ########################
     reset_booking()
-
+    print(request.form)
     ######## CHECKS #########
     if(isBlank(request.form['username']) or isBlank(request.form['roll_no']) or isBlank(request.form['first_name']) or isBlank(request.form['password']) or isBlank(request.form['address_line_1'])):
         response = {
@@ -182,7 +180,7 @@ def register():
         'email': request.form['email'],
         'name': request.form['first_name'] + " " + request.form['last_name'],
         'roll_no': request.form['roll_no'],
-        'age': request.form['age'],
+        'age': int(request.form['age']),
         'gender': request.form['gender'],
         'address': str(request.form['address_line_1']) + ", "  + str(request.form['address_line_2']),
         'booking_ids': []
@@ -204,7 +202,7 @@ def register():
 def login():
     ##########################
     reset_booking()
-
+    print(request.form)
     ############### CHECKS ###############
     if (isBlank(request.form["username"]) or isBlank(request.form["password"])):
         response = {
@@ -223,6 +221,7 @@ def login():
     
     ################# PASSWORD VERIFICATION ###################
     probable_user = user_collection.find_one({"username" : request.form["username"]})
+    probable_user['_id'] = str(probable_user['_id'])
     if (request.form["password"] != probable_user["password"]):
         response = {
             "status":200,
@@ -233,16 +232,15 @@ def login():
     else: 
         global cur_user
         cur_user = probable_user
-
         response = {
             "status":0,
             "message": "login successful",
             "data": probable_user
         }
-        jsonify(response)
+        return jsonify(response)
 
-##### LOGOUT ROUTE ############
-###############################
+############ LOGOUT ROUTE ############
+######################################
 @app.route('/logout',methods = ["GET"])
 def logout():
     ########################
@@ -312,6 +310,25 @@ def payment_done():
 def cancellation():
     reset_booking()
     pass
+
+@app.route('/profile',methods=["GET"])
+def get_profile():
+    global cur_user
+    print(cur_user)
+    if (cur_user == -1):
+        response = {
+            "status": 100,
+            "message": "No user is logged in",
+            "data": {}
+        }
+        return jsonify(response)
+    else:
+        response = {
+            "status": 0,
+            "message": "fetched user details",
+            "data": cur_user
+        }
+        return jsonify(response)
 
 
 # START THE APP

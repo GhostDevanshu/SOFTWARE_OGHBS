@@ -6,7 +6,7 @@ const Profile = ({}) => {
 const [person,setperson]=useState({});
 useEffect(() => {
   axios
-    .get('http://10.145.215.252:5002/profile')
+    .get(process.env.REACT_APP_URI+'/profile')
     .then((res) => {
       console.log(res);
       setperson(res.data.data)

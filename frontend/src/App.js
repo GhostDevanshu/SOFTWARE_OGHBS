@@ -5,12 +5,13 @@ import Home from './components/Home';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Navbar from './components/Navbar';
-import SuccessLogin from './components/SuccessLogin';
 import {  createBrowserRouter,RouterProvider } from "react-router-dom";
 import About from './components/About';
 import Profile from './components/Profile';
-import UserNavbar from './UserNavbar';
-import { useUser } from './components/context';
+import UserNavbar from './components/UserNavbar';
+import ForUser from './components/ForUser';
+import CheckAvailability from './components/CheckAvailability';
+import Booking from './components/Booking';
 function App() {
   
   // const {info} =useUser();
@@ -38,17 +39,25 @@ function App() {
     element:<div><Navbar /><About /></div>
    },
    {
-    
-    path:'/loginsuccess',
-    element:<div><UserNavbar userinfo={info} /><SuccessLogin userinfoafterlogin= {info} /></div>
+    path:'/profile',
+    element:<div><UserNavbar/><Profile /></div>
    },
    {
-    path:'/profile',
-    element:<div><UserNavbar userinfo={info}/><Profile /></div>
+    path:'/home',
+    element:<div><UserNavbar/><ForUser/></div>
+   },
+   {
+    path:'/checkavailable',
+    element:<div><UserNavbar/><CheckAvailability/></div>
+   },
+   {
+    path:'/book',
+    element:<div><UserNavbar/><Booking/></div>
    }
   ])
   return (
     <div>
+      
     <RouterProvider router={router}></RouterProvider>
     </div>
 

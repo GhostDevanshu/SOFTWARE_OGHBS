@@ -17,7 +17,6 @@ function SignUp() {
     password: '',
     verify_password: '',
     email:'',
-    someshit:false
   });
   const handlechange = (e) => {
     setFormdata(prevState => ({
@@ -29,22 +28,22 @@ function SignUp() {
   const handleSubmit =async (e)=>{
     e.preventDefault()
     console.log(formsignup)
-    // try {
-    //   const response = await axios({
-    //     method: 'post',
-    //     url: 'http://10.145.215.252:5002/register',
-    //     data: formsignup,
-    //     headers: { "Content-Type": "multipart/form-data" },
-    //   });
-    //   console.log('Response data:', response.data);
+    try {
+      const response = await axios({
+        method: 'post',
+        url: process.env.REACT_APP_URI+'/register',
+        data: formsignup,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log('Response data:', response.data);
       
 
-    // } catch (error) {
-    //   console.error('Error submitting form data:', error);
-    //   // Add error handling here, like displaying an error message to the user
-    // }
+    } catch (error) {
+      console.error('Error submitting form data:', error);
+      // Add error handling here, like displaying an error message to the user
+    }
     console.log("hello")
-    // navigate('/login')
+    navigate('/login')
   }
   
    return (

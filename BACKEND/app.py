@@ -66,11 +66,9 @@ def update_system():
         else:
             pass
     return
-
 def reset_booking():
     global curr_booking
     curr_booking = -1
-    
 def checkavailable(guest_house):
     global checkindate
     global checkoutdate
@@ -186,7 +184,10 @@ def register():
         'booking_ids': []
     }
     user_collection.insert_one(user)
-
+    print("*********************")
+    user["_id"] = str(user["_id"])
+    print(user)
+    print("*********************")
     response = {
             "status":0,
             "message": "User created succesfully",
@@ -287,6 +288,7 @@ def availability():
             "message": "check-out date is before check-in date. REVERSE TIME ERROR",
             "data": {}
         }
+        return jsonify(response)
 
     data = checkavailable(guest_house=str(request.form["guest_house"]))
 
@@ -300,7 +302,15 @@ def availability():
 
 @app.route('/book',methods= ["POST"])
 def book():
-    pass
+    print(request.form)
+    for ki in range(1,int(request.form["numberOfPeople"])+1):
+        print(request.form[f"names[{ki}]"])
+    response = {
+        "status" : 0,
+        "message" : "Fetched successfully",
+        "data" : {}
+    }
+    return jsonify(response)
 
 @app.route('/payement_done',methods = ["POST"])
 def payment_done():

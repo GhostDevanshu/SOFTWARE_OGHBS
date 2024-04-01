@@ -1,12 +1,35 @@
 .booking-container {
     display: flex;
+    size: 50px; ;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
+    overflow-y: auto; 
   }
   
-  form {
+  .people-info-container {
+    max-height: 400px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds container height */
+  }
+  
+  .person-info {
+    margin-bottom: 10px; /* Adjust as needed */
+  }
+  
+  .booking-label {
+    margin-bottom: 10px; /* Adjust as needed */
+  }
+  
+  .booking-input {
+    margin-bottom: 10px; /* Adjust as needed */
+    width: calc(100% - 10px); /* Adjusted width */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  .booking-form {
     width: 300px;
     border: 1px solid #ccc;
     padding: 20px;
@@ -17,16 +40,6 @@
   label {
     margin-bottom: 10px;
     display: block;
-  }
-  
-  input[type="date"],
-  input[type="number"],
-  input[type="text"] {
-    width: calc(100% - 10px);
-    margin-bottom: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
   }
   
   h3 {

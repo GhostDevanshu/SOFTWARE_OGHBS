@@ -1,6 +1,6 @@
 const Navbar = () => {
     return (
-      <nav className="navbar">
+      <nav className="navbar" >
         <h1>IIT KGP Guest House </h1>
         <div className="links">
           <a href="/">Home</a>

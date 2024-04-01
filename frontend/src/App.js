@@ -12,6 +12,7 @@ import UserNavbar from './components/UserNavbar';
 import ForUser from './components/ForUser';
 import CheckAvailability from './components/CheckAvailability';
 import Booking from './components/Booking';
+import Payment from './Payment';
 function App() {
   
   // const {info} =useUser();
@@ -48,16 +49,19 @@ function App() {
    },
    {
     path:'/checkavailable',
-    element:<div><UserNavbar/><CheckAvailability/></div>
+    element:<div ><UserNavbar/><CheckAvailability /></div>
    },
    {
     path:'/book',
     element:<div><UserNavbar/><Booking/></div>
+   },
+   {
+    path:'/getpayment',
+    element:<div><UserNavbar/><Payment/></div>
    }
   ])
   return (
-    <div>
-      
+    <div> 
     <RouterProvider router={router}></RouterProvider>
     </div>
 

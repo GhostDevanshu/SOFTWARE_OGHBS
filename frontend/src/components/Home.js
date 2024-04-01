@@ -8,12 +8,15 @@ const Home = () => {
       
     <div className="home-container">
       <h1 className="welcome-text">Welcome to IIT KGP Guest House </h1>
-
     </div>
-    <div>
-            <a id="book_tickets" href="/signup">BOOK TICKETS</a>
+    <div className='home-container1'>
+            <h1>some shit</h1>
+            <h1 className='welcome-text'> </h1>
     </div>
-    </div >
+    <div className='home-container2'>
+            <h1 className='welcome-text'> </h1>
+    </div>
+    </div>
   );
 };
 

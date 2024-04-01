@@ -1,6 +1,30 @@
 .home-container {
   display: flex;
-
+  background-image: url('/Users/jeevanvarmakonduri/Desktop/softyproject/SOFTWARE_OGHBS/frontend/public/manohar-manu-hNsYIjUeXJw-unsplash.jpg');
+  align-items: center;
+  justify-content: center;
+  height:100vh;
+  /* background-image: url('vgh.jpg'); Replace 'path/to/your/image.jpg' with the path to your image */
+  /* opacity: 0.5; */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+}
+.home-container1 {
+  display: flex;
+  background-image: url('/Users/jeevanvarmakonduri/Desktop/softyproject/SOFTWARE_OGHBS/frontend/public/tghfront.jpg');
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  /* background-image: url('vgh.jpg'); Replace 'path/to/your/image.jpg' with the path to your image */
+  /* opacity: 0.5; */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+}
+.home-container2 {
+  display: flex;
+  background-image: url('/Users/jeevanvarmakonduri/Desktop/softyproject/SOFTWARE_OGHBS/frontend/public/vgh.jpg');
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -28,10 +52,11 @@
 
 .welcome-text {
   font-size: 4rem;
-  
-  height: 40vh;
-  animation: fadeIn 1s ease-in-out;
-  color: rgb(2, 8, 61);
+  background-color: rgb(108, 240, 240);
+  border-radius: 45px;
+  height: 10vh;
+  animation: fadeIn 2s ease-in-out;
+  color: rgb(13, 39, 231);
 }
 #book_tickets{
   font-size: 4rem;

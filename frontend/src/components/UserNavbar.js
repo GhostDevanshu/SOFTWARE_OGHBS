@@ -12,7 +12,7 @@ const UserNavbar = () => {
       })
       .catch((err) => {
       });
-  }, []);
+  }, );
 
 
     return (
@@ -21,8 +21,8 @@ const UserNavbar = () => {
         <div className="links">
 
           <a href="/home">Home</a>
-          <a href="/profile">Profile</a>
-          <a href="/checkavailable">Check Availability</a>
+          <a href="/profile">Bookings</a>
+          <a href="/checkavailable">Book Now</a>
           
           <a href="/" style={{ 
             color: 'white', 

@@ -1,10 +1,15 @@
 .date-form-container {
     display: flex;
+    size: 0vmax;
+    /* background-image: url('christopher-jolly-GqbU78bdJFM-unsplash.jpg'); */
+    background-size: cover; /* Ensure the background image covers the entire container */
+    background-position: center; /* Center the background image within the container */
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
-  }
+}
+
   
   form {
     width: 300px;

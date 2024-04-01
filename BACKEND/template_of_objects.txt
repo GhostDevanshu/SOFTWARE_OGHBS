@@ -3,6 +3,7 @@ User
     _id: ObjectId()
     username: str
     password: str
+    email: str
     roll_no: str
     age: int
     gender: str
@@ -63,7 +64,6 @@ booking
     }
     payment_status: str
     feedback:
-
 }
 
 

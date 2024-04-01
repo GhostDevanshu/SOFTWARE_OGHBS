@@ -24,38 +24,36 @@
 
 
 
-# import os
-# from dotenv import load_dotenv
-# from pymongo import MongoClient
-# from pymongo.errors import ConnectionFailure
-# from datetime import datetime, timedelta
+import os
+from dotenv import load_dotenv
+from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
+from datetime import datetime, timedelta
+from pymongo import ASCENDING,DESCENDING
+load_dotenv()
+# LOADING THE DATABASE
+DB_URI = "mongodb+srv://devanshuagrawal99:Devanshu@oghbssw.rvaadkh.mongodb.net/?retryWrites=true&w=majority&appName=OGHBSSW"
+client = MongoClient(DB_URI)
 
-# load_dotenv()
-# # LOADING THE DATABASE
-# DB_URI = "mongodb+srv://devanshuagrawal99:Devanshu@oghbssw.rvaadkh.mongodb.net/?retryWrites=true&w=majority&appName=OGHBSSW"
-# client = MongoClient(DB_URI)
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+    print("Connected to MongoDB successfully!")
+except ConnectionFailure as e:
+    print("Could not connect to MongoDB: %s" % e)
 
-# try:
-#     client.admin.command('ping')
-#     print("Pinged your deployment. You successfully connected to MongoDB!")
-#     print("Connected to MongoDB successfully!")
-# except ConnectionFailure as e:
-#     print("Could not connect to MongoDB: %s" % e)
+db = client.OGHBSdatabase
 
-# db = client.OGHBSdatabase
+#GETTING ALL THE COLLECTIONS
 
-# #GETTING ALL THE COLLECTIONS
+room_collection = db.room_collection
+user_collection = db.user_collection
+booking_collection = db.booking_collection
 
-# room_collection = db.room_collection
-# user_collection = db.user_collection
-# booking_collection = db.booking_collection
+rooms = room_collection.find({}).sort("_id", DESCENDING)
 
-# username = 'Mike'
-# roll_no = '22CS30066'
-# if (user_collection.count_documents({"username": username}) != 0):
-#     print(100)
-# if (user_collection.count_documents({"roll_no": roll_no}) != 0):
-#     print(200)
+for room in rooms: 
+    print(room)
 
 
 
@@ -66,5 +64,3 @@
 
 # print(has_numbers("I own 1 dog"))
 # print(has_numbers("I own no dog"))
-
-import datetime

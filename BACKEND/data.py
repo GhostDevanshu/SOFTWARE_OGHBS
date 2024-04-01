@@ -1,16 +1,9 @@
-from flask import Flask, request, redirect, url_for, render_template,jsonify
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from datetime import datetime, timedelta
-import re
-
-app = Flask(__name__,template_folder="/Users/devanshuagrawal/Desktop/SOFTWARE/PROJECT/FRONTEND/templates")
-# MAKING THE CONNECTION
 load_dotenv()
-app = Flask(__name__)
-
 # LOADING THE DATABASE
 DB_URI = os.getenv('DB_URI')
 client = MongoClient(DB_URI)
@@ -154,17 +147,27 @@ if (guest_house_collections.count_documents({}) == 0):
 if (user_collection.count_documents({}) == 0):
     user_collection.insert_one(admin)
 
-for guest_house in guest_house_collections.find({}):
-    print(guest_house)
-    print(type(guest_house))
-    print(type(guest_house["rooms"]))
+def reset():
+    db["food_options"].drop()
+    db["room_collection"].drop()
+    db["guest_house_collection"].drop()
 
+    food_options.insert_many(food_options_list)
+    room_collection.insert_many(rooms)
+    guest_house_collections.insert_many(guest_houses)
+
+reset()
 # test space
     
 prev_bookings = {
     "2024-03-29":{
         "DBS AC": 0,
         "DBS NAC": 0,
+        "DR AC": 0
+    },
+    "2024-04-05":{
+        "DBS AC": 0,
+        "DBS NAC": 2,
         "DR AC": 0
     }
 }

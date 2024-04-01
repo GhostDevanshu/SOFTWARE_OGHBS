@@ -5,6 +5,9 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from datetime import datetime, timedelta
 import re
+import copy
+from bson import ObjectId
+from pymongo import ASCENDING
 
 app = Flask(__name__,template_folder="/Users/devanshuagrawal/Desktop/SOFTWARE/PROJECT/FRONTEND/templates")
 # MAKING THE CONNECTION
@@ -68,7 +71,6 @@ def update_system():
     return
 def reset_booking():
     global curr_booking
-    curr_booking = -1
 def checkavailable(guest_house):
     global checkindate
     global checkoutdate
@@ -76,14 +78,15 @@ def checkavailable(guest_house):
     guest_house_detail = guest_house_collections.find_one({"code":guest_house})
     previous_bookings = guest_house_detail["prev_bookings"]
 
-    for_each_date = {}
+    for_each_room = guest_house_detail["rooms"]
     for add_days in range((checkoutdate - checkindate).days + 1):
         new_date = checkindate + timedelta(days=add_days)
-        
         if (str(new_date.date()) in previous_bookings):
-            for_each_date[str(new_date.date())] = previous_bookings[str(new_date.date())]
+            for room in previous_bookings[str(new_date.date())].keys():
+                if previous_bookings[str(new_date.date())][room] < for_each_room[room]: 
+                    for_each_room[room] = previous_bookings[str(new_date.date())][room]
         else:
-            for_each_date[str(new_date.date())] = guest_house_detail["rooms"]
+            continue
     
     data = {}
     data["rooms"] = []
@@ -95,16 +98,180 @@ def checkavailable(guest_house):
             {
                 "code" : room["code"],
                 "description" : room["description"],
-                "AC" : room["AC"],
+                "AC" : "YES" if room["AC"] else "NO",
                 "floor" : room["floor"],
                 "Occupancy": room["Occupancy"],
-                "price_per_day": room["Price_per_day"]
+                "price_per_day": room["Price_per_day"],
+                "available": for_each_room[room_code],
             }
         )
-    
-    data["available_each_date"] = for_each_date
+    return data
+def checkavailablefordates(checkindate,checkoutdate,guest_house,room_code):
+    guest_house_detail = guest_house_collections.find_one({"code":guest_house})
+    previous_bookings = guest_house_detail["prev_bookings"]
+    flag = 1
+    for add_days in range((checkoutdate - checkindate).days + 1):
+        new_date = checkindate + timedelta(days=add_days)
+        if (str(new_date.date()) in previous_bookings):
+            for room in previous_bookings[str(new_date.date())].keys():
+                if room_code == room:
+                    if previous_bookings[str(new_date.date())][room] <= 0:
+                        flag=0
+                        return flag
+        else:
+            continue
+    return flag
+
+def update_guest_house_booking(checkindate,checkoutdate,guest_house,room_code):
+    guest_house_detail = guest_house_collections.find_one({"code":guest_house})
+
+    previous_bookings = copy.deepcopy(guest_house_detail["prev_bookings"])
+    for add_days in range((checkoutdate - checkindate).days + 1):
+        new_date = checkindate + timedelta(days=add_days)
+        if (str(new_date.date()) in previous_bookings):
+            previous_bookings[str(new_date.date())][room_code] = previous_bookings[str(new_date.date())][room_code]-1
+            pass
+        else:
+            previous_bookings[str(new_date.date())] = copy.deepcopy(guest_house_detail["rooms"])
+            previous_bookings[str(new_date.date())][room_code] = previous_bookings[str(new_date.date())][room_code]-1
+    print(previous_bookings)
+    guest_house_collections.update_one({"code":guest_house},{"$set":{"prev_bookings":previous_bookings}})
+    return
+
+def construct_Booking_document():
+    global curr_booking
+    global cur_user
+    booking_document = {
+        "user_id" : str(user_collection.find_one({"username": cur_user["username"]})["_id"]),
+        "checkindate": curr_booking["checkindate"],
+        "checkoutdate": curr_booking["checkoutdate"],
+        "payment_status": curr_booking["payment_status"],
+        "cost": curr_booking["cost"],
+        "individuals": curr_booking["individuals"],
+        "booking_status": "CONFIRMED" if curr_booking["available"] > 0 else "WAITLISTED",
+        "payment_details": curr_booking["payment_details"],
+        "guest_house": curr_booking["guest_house"],
+        "room_code": curr_booking["room_code"],
+        "feedback": ""
+    }
+
+    update_guest_house_booking(datetime.strptime(curr_booking['checkindate'], "%Y-%m-%d"),datetime.strptime(curr_booking['checkoutdate'], "%Y-%m-%d"),curr_booking["guest_house"],curr_booking["room_code"])
+
+    id_for_booking = str(booking_collection.insert_one(booking_document).inserted_id)
+
+    cur_user["booking_ids"].append(id_for_booking)
+    user_collection.update_one({"username":cur_user["username"]},{"$set":{"booking_ids":cur_user["booking_ids"]}})
+
+    curr_booking = -1
+    return
+
+def initiatecurrbooking(form):
+    global curr_booking
+    print(curr_booking)
+    curr_booking = {}
+
+    curr_booking = {
+        "checkindate" : form['checkindate'], 
+        "checkoutdate" : form['checkoutdate'], 
+        "guest_house" : form["guest_house"],
+        "room_code" : form["room_code"],
+        "occupancy" : int(form["occupancy"]),
+        "available" : int(form["available"])
+    }
+
+    print(curr_booking)
+    data = {
+        "occupancy" : form["occupancy"]
+    }
 
     return data
+
+def addindividualstocurr(form):
+    global curr_booking
+    print(curr_booking)
+    individuals_list = []
+
+    cost_of_food = 0
+    for i in range(0, curr_booking["occupancy"]):
+        individual = {}
+
+        individual = {
+            "name" : form[f"peopleInfo[{i}][name]"],
+            "age" : form[f"peopleInfo[{i}][age]"],
+            "gender" : form[f"peopleInfo[{i}][gender]"],
+            "relation" : form[f"peopleInfo[{i}][relation]"],
+            "food_option": form[f"peopleInfo[{i}][food]"]
+        }    
+        individuals_list.append(individual)
+        cost_of_food += (0.2 * food_options.find_one({"description": form[f"peopleInfo[{i}][food]"]})["Price"])
+
+    curr_booking["individuals"] = individuals_list
+
+    room = room_collection.find_one({"code": curr_booking["room_code"]})
+    total_cost = 0.2 * ((  room["Price_per_day"] ) + cost_of_food) * (int((datetime.strptime(curr_booking['checkoutdate'], "%Y-%m-%d") - (datetime.strptime(curr_booking['checkindate'], "%Y-%m-%d"))).days) + 1)
+    curr_booking["cost"] = total_cost
+    data = {
+        "price" : total_cost
+    }
+    print(curr_booking)
+
+    return data
+
+def payment_completion(form):
+    global curr_booking
+    print(curr_booking)
+    card_details = {
+        "card_number" : form["card_number"],
+        "card_expiry" : form["expiry_month"],
+        "card_cvv" : form["cvv"],
+        "name_on_card" : form["name_on_card"]
+    }
+
+    curr_booking["payment_details"] = card_details
+    curr_booking["payment_status"] = "COMPLETED"
+    print(curr_booking)
+    construct_Booking_document()
+    data = {}
+    return data
+
+def cancel_booking(booking_id):
+    booking = booking_collection.find_one({"_id":ObjectId(booking_id)})
+    if booking["booking_status"] != "CONFIRMED" or booking["booking_status"] != "WAITLISTED":
+        data = {}
+        return (data)
+    booking_collection.update_one({"_id":ObjectId(booking_id)},{"$set": {"booking_status":"CANCELLED"}})
+    booking_collection.update_one({"_id":ObjectId(booking_id)},{"$set": {"payment_status":"REFUNDED"}})
+    checkindate = datetime.strptime(booking['checkindate'], "%Y-%m-%d")
+    checkoutdate = datetime.strptime(booking['checkoutdate'], "%Y-%m-%d")
+
+    guest_house_detail = guest_house_collections.find_one({"code":booking["guest_house"]})
+
+
+    ### update data base guest 
+    previous_bookings = copy.deepcopy(guest_house_detail["prev_bookings"])
+    for add_days in range((checkoutdate - checkindate).days + 1):
+        new_date = checkindate + timedelta(days=add_days)
+        if (str(new_date.date()) in previous_bookings):
+            previous_bookings[str(new_date.date())][booking["room_code"]] = previous_bookings[str(new_date.date())][booking["room_code"]]+1
+            pass
+        else:
+            previous_bookings[str(new_date.date())] = copy.deepcopy(guest_house_detail["rooms"])
+            previous_bookings[str(new_date.date())][booking["room_code"]] = previous_bookings[str(new_date.date())][booking["room_code"]]+1
+    print(previous_bookings)
+    guest_house_collections.update_one({"code":booking["guest_house"]},{"$set":{"prev_bookings":previous_bookings}})
+
+
+    ### update data base booking
+    smaller_booking_users = booking_collection.find({"guest_house":booking["guest_house"],"room_code":booking["room_code"],"booking_status":"WAITLISTED"}).sort("_id", ASCENDING)
+
+    for booking_loop in smaller_booking_users:
+        flag = checkavailablefordates(datetime.strptime(booking_loop['checkindate'], "%Y-%m-%d"),datetime.strptime(booking_loop['checkindate'], "%Y-%m-%d"),booking_loop["guest_house"],booking_loop["room_code"])
+        if flag == 1:
+            booking_collection.update_one({"_id":booking_loop["_id"]},{"$set":{"booking_status":"CONFIRMED"}})
+            break
+    return
+
+
 
 #ROUTE FOR CHECKING
 @app.after_request
@@ -126,7 +293,6 @@ def hello_world():
 def register():
     ########################
     reset_booking()
-    print(request.form)
     ######## CHECKS #########
     if(isBlank(request.form['username']) or isBlank(request.form['roll_no']) or isBlank(request.form['first_name']) or isBlank(request.form['password']) or isBlank(request.form['address_line_1'])):
         response = {
@@ -184,10 +350,7 @@ def register():
         'booking_ids': []
     }
     user_collection.insert_one(user)
-    print("*********************")
     user["_id"] = str(user["_id"])
-    print(user)
-    print("*********************")
     response = {
             "status":0,
             "message": "User created succesfully",
@@ -203,7 +366,6 @@ def register():
 def login():
     ##########################
     reset_booking()
-    print(request.form)
     ############### CHECKS ###############
     if (isBlank(request.form["username"]) or isBlank(request.form["password"])):
         response = {
@@ -238,6 +400,7 @@ def login():
             "message": "login successful",
             "data": probable_user
         }
+        print(probable_user)
         return jsonify(response)
 
 ############ LOGOUT ROUTE ############
@@ -263,16 +426,15 @@ def logout():
 
 @app.route('/checkavailable',methods = ["POST"])
 def availability():
-    print("routed")
     reset_booking()
     global checkindate
     global checkoutdate
     checkindate = datetime.strptime(request.form['checkindate'], "%Y-%m-%d")
     checkoutdate = datetime.strptime(request.form['checkoutdate'], "%Y-%m-%d")
-    print(checkindate)
-    print(checkoutdate)
+    message = "Showing availability between the provided checkin and checkout dates"
     if (checkindate.date() < datetime.now().date()):
         checkindate = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d")
+        message = "Check-in date is in the past showing availability from now to Checkout"
 
     if (checkindate.date() < datetime.now().date() or checkoutdate.date() < datetime.now().date()):
         response = {
@@ -285,7 +447,7 @@ def availability():
     if (checkoutdate.date() < checkindate.date()):
         response = {
             "status":300,
-            "message": "check-out date is before check-in date. REVERSE TIME ERROR",
+            "message": message,
             "data": {}
         }
         return jsonify(response)
@@ -300,31 +462,53 @@ def availability():
 
     return jsonify(response)
 
-@app.route('/book',methods= ["POST"])
-def book():
+@app.route('/initiatebooking',methods=["POST"])
+def initiatebooking():
     print(request.form)
-    for ki in range(1,int(request.form["numberOfPeople"])+1):
-        print(request.form[f"names[{ki}]"])
     response = {
         "status" : 0,
         "message" : "Fetched successfully",
-        "data" : {}
+        "data" : initiatecurrbooking(request.form)
     }
     return jsonify(response)
 
-@app.route('/payement_done',methods = ["POST"])
+@app.route('/addingindividual', methods = ["POST"])
+def addindividuals():
+    print(request.form)
+    response = {
+        "status" : 0,
+        "message" : "Fetched successfully",
+        "data" : addindividualstocurr(request.form)
+    }
+
+    return jsonify(response)
+
+
+@app.route('/payment_done',methods = ["POST"])
 def payment_done():
-    pass
+    print(request.form)
+    reponse = {
+        "status" : 0,
+        "message" : "Fetched successfully",
+        "data" : payment_completion(request.form)
+    }
+
+    return jsonify(reponse)
 
 @app.route('/cancellation',methods=["POST"])
 def cancellation():
     reset_booking()
-    pass
+    cancel_booking(request.form["booking_id"])
+    response = {
+        "status" : 0,
+        "message" : "Cancelled Booking",
+        "data": {}
+    }
+    return
 
 @app.route('/profile',methods=["GET"])
 def get_profile():
     global cur_user
-    print(cur_user)
     if (cur_user == -1):
         response = {
             "status": 100,
@@ -340,6 +524,39 @@ def get_profile():
         }
         return jsonify(response)
 
+@app.route('/getoccupancy',methods=["GET"])
+def get_occupancy():
+    global curr_booking
+    response = {
+        "status": 0,
+        "message": "fetched successfully",
+        "data": {
+            "occupancy":curr_booking["occupancy"]
+        }
+    }
+    return jsonify(response)
+
+@app.route('/get_payment', methods = ["GET"])
+def get_payment():
+    global curr_booking
+    response = {
+        "status": 0,
+        "message": "Got the price for stay",
+        "data":{
+            "cost": curr_booking["cost"]
+        }
+    }
+    return jsonify(response)
+
+@app.route('/feedback',methods=["POST"])
+def set_feedback():
+    booking_collection.update_one({"_id": ObjectId(request.form["booking_id"])},{"$set":{"feedback":request.form["feedback"]}})
+    response = {
+        "status": 0,
+        "message": "Feedback set successfully",
+        "data": {}
+    }
+    return jsonify(response)
 
 # START THE APP
 if __name__ == '__main__':

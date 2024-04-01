@@ -1,12 +1,12 @@
 .about-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+
     height: 100vh;
 }
 
 .hello-text {
-    font-size: 3rem;
+    font-size: 2rem;
     animation: slideIn 2s ease-in-out;
 }
 

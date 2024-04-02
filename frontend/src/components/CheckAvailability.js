@@ -87,6 +87,7 @@ const handlesubmitbooking = async(event,info) => {
   return (
     <div className="date-form-container" >
       {!isok&&(<form onSubmit={handleSubmit} className="date-form">
+        <h4>Availability</h4>
         <label className="date-label">
           Start Date:
           <input 
@@ -116,9 +117,9 @@ const handlesubmitbooking = async(event,info) => {
             required
           >
             <option value="">Select Guest House</option>
-            <option value="TGH">Guest House 1</option>
-            <option value="VGH">Guest House 2</option>
-            <option value="KGH">Guest House 3</option>
+            <option value="TGH">TGH</option>
+            <option value="VGH">VGH</option>
+            <option value="KGH">KGH</option>
           </select>
         </label>
         <button type="submit" className="submit-button">Submit</button>
@@ -129,7 +130,6 @@ const handlesubmitbooking = async(event,info) => {
             {responseafter.map((each,index)=>(
                <div key={index} className="blog-preview">
                 <CheckAvailabilitycard/>
-                
                 <h1>{each.description}</h1>
                 <h2>Air-Conditioned={each.AC} ,Availability={each.available},Floor={each.floor} </h2>
                 <h2>Price=Rs{each.price_per_day}/- per day </h2>

@@ -128,7 +128,7 @@ function Booking() {
             onChange={(event) => handleInfoChange(index,'food',event.target.value)}
             required
           >
-            <option value="">Select Guest House</option>
+            <option value="">Food Options</option>
             <option value="Veg food (single person)">Veg food (single person) price =Rs.200/- </option>
             <option value="Non Veg Food (single person)">Non Veg food (single person) price=Rs.200/-</option>
             <option value="No food required">No food required</option>

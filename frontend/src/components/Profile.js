@@ -16,7 +16,7 @@ useEffect(() => {
 }, []);
   return (
     <div className="profile">
-      <h2>Profile</h2>
+      <h1>Profile</h1>
       <div>
         <strong>Name:</strong> {person.name}
       </div>
@@ -27,6 +27,7 @@ useEffect(() => {
         <strong>Age:</strong> {person.age}
       </div>
       {/* Add more details as needed */}
+      
     </div>
   );
 };

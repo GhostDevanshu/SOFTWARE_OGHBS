@@ -54,15 +54,15 @@ def update_system():
     
     for booking in bookings:
         if  datetime.strptime(booking["checkindate"], "%Y-%m-%d").date() < datetime.now().date():
-            if booking['confirmation_status'] == 'confirmed':
+            if booking['booking_status'] == 'CONFIRMED':
                 booking_collection.update_one(
                     {'_id': booking['_id']},  
-                    {'$set': {'confirmation_status': 'completed'}}  
+                    {'$set': {'booking_status': 'COMPLETED'}}  
                 )
-            elif booking['confirmation_status'] == 'waitlist':
+            elif booking['booking_status'] == 'WAITLISTED':
                 booking_collection.update_one(
                     {'_id': booking['_id']},  
-                    {'$set': {'confirmation_status': 'completed','payment_status': 'refunded'}}  
+                    {'$set': {'booking_status': 'COMPLETED','payment_status': 'REFUNDED'}}  
                 )
             else:
                 pass
@@ -236,8 +236,10 @@ def payment_completion(form):
 
 def cancel_booking(booking_id):
     booking = booking_collection.find_one({"_id":ObjectId(booking_id)})
-    if booking["booking_status"] != "CONFIRMED" or booking["booking_status"] != "WAITLISTED":
+    print(booking)
+    if booking["booking_status"] != "CONFIRMED" and booking["booking_status"] != "WAITLISTED":
         data = {}
+        print("working")
         return (data)
     booking_collection.update_one({"_id":ObjectId(booking_id)},{"$set": {"booking_status":"CANCELLED"}})
     booking_collection.update_one({"_id":ObjectId(booking_id)},{"$set": {"payment_status":"REFUNDED"}})
@@ -260,7 +262,6 @@ def cancel_booking(booking_id):
     print(previous_bookings)
     guest_house_collections.update_one({"code":booking["guest_house"]},{"$set":{"prev_bookings":previous_bookings}})
 
-
     ### update data base booking
     smaller_booking_users = booking_collection.find({"guest_house":booking["guest_house"],"room_code":booking["room_code"],"booking_status":"WAITLISTED"}).sort("_id", ASCENDING)
 
@@ -269,7 +270,10 @@ def cancel_booking(booking_id):
         if flag == 1:
             booking_collection.update_one({"_id":booking_loop["_id"]},{"$set":{"booking_status":"CONFIRMED"}})
             break
-    return
+    
+    data = {}
+    return data
+
 
 
 
@@ -498,13 +502,13 @@ def payment_done():
 @app.route('/cancellation',methods=["POST"])
 def cancellation():
     reset_booking()
-    cancel_booking(request.form["booking_id"])
+    print(request.form)
     response = {
         "status" : 0,
         "message" : "Cancelled Booking",
-        "data": {}
+        "data": cancel_booking(request.form["booking_id"])
     }
-    return
+    return jsonify(response)
 
 @app.route('/profile',methods=["GET"])
 def get_profile():
@@ -557,6 +561,53 @@ def set_feedback():
         "data": {}
     }
     return jsonify(response)
+
+#### admin features
+@app.route('/get_all_users', methods=["POST"])
+def get_all_users():
+    data = []
+    for user in user_collection.find({}):
+        user["_id"] = str(user["_id"])
+        data.append(user)
+
+    response = {
+        "status": 0,
+        "message": "GOT all users",
+        "data": data
+    }
+    return jsonify(response)
+
+@app.route('/get_all_bookings', methods=["POST"])
+def get_all_bookings():
+    data = []
+    for booking in booking_collection.find({}):
+        booking["_id"] = str(booking["_id"])
+        data.append(booking)
+
+    response = {
+        "status": 0,
+        "message": "GOT all users",
+        "data": data
+    }
+    return jsonify(response)
+
+@app.route('/kick_user',methods= ["POST"])
+def kick_user():
+    user_id = request.form["user_id"]
+    for user in user_collection.find({"_id": ObjectId(user_id)}):
+        for booking_id in user["booking_ids"]:
+            cancel_booking(booking_id)
+
+    user_collection.delete_one({"_id": ObjectId(user_id)})
+    response = {
+        "status": 0,
+        "message": f"KICKED OUT USER {user_id}",
+        "data": {}
+    }
+
+    return jsonify(response)
+
+
 
 # START THE APP
 if __name__ == '__main__':

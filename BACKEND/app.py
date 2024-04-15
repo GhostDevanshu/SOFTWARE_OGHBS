@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template,jsonify
+from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -9,7 +9,7 @@ import copy
 from bson import ObjectId
 from pymongo import ASCENDING
 
-app = Flask(__name__,template_folder="/Users/devanshuagrawal/Desktop/SOFTWARE/PROJECT/FRONTEND/templates")
+app = Flask(__name__)
 # MAKING THE CONNECTION
 load_dotenv()
 app = Flask(__name__)
@@ -69,8 +69,6 @@ def update_system():
         else:
             pass
     return
-def reset_booking():
-    global curr_booking
 def checkavailable(guest_house):
     global checkindate
     global checkoutdate
@@ -168,6 +166,7 @@ def construct_Booking_document():
 def initiatecurrbooking(form):
     global curr_booking
     print(curr_booking)
+    print(form)
     curr_booking = {}
 
     curr_booking = {
@@ -194,7 +193,14 @@ def addindividualstocurr(form):
     cost_of_food = 0
     for i in range(0, curr_booking["occupancy"]):
         individual = {}
-
+        if(isBlank(form[f"peopleInfo[{i}][name]"]) or isBlank(form[f"peopleInfo[{i}][age]"]) or isBlank(form[f"peopleInfo[{i}][gender]"]) or isBlank(form[f"peopleInfo[{i}][relation]"]) or isBlank(form[f"peopleInfo[{i}][food]"])):
+            response = {
+                "status" : 300,
+                "message" : "A Field is empty",
+                "data" : {}
+            }
+            return jsonify(response)
+        
         individual = {
             "name" : form[f"peopleInfo[{i}][name]"],
             "age" : form[f"peopleInfo[{i}][age]"],
@@ -214,12 +220,23 @@ def addindividualstocurr(form):
         "price" : total_cost
     }
     print(curr_booking)
-
-    return data
+    response = {
+        "status": 0,
+        "message": "added individuals",
+        "data": {}
+    }
+    return response
 
 def payment_completion(form):
     global curr_booking
-    print(curr_booking)
+    if (False):
+        response = {
+            "status" : 300,
+            "message" : "Card Details are incorrect",
+            "data": {}
+        }
+        return jsonify(response)
+
     card_details = {
         "card_number" : form["card_number"],
         "card_expiry" : form["expiry_month"],
@@ -264,8 +281,13 @@ def cancel_booking(booking_id):
 
     ### update data base booking
     smaller_booking_users = booking_collection.find({"guest_house":booking["guest_house"],"room_code":booking["room_code"],"booking_status":"WAITLISTED"}).sort("_id", ASCENDING)
-
+    print("********************")
+    print(smaller_booking_users)
+    print("********************")
     for booking_loop in smaller_booking_users:
+        print("11111111111111")
+        print(booking_loop)
+        print("11111111111111")
         flag = checkavailablefordates(datetime.strptime(booking_loop['checkindate'], "%Y-%m-%d"),datetime.strptime(booking_loop['checkindate'], "%Y-%m-%d"),booking_loop["guest_house"],booking_loop["room_code"])
         if flag == 1:
             booking_collection.update_one({"_id":booking_loop["_id"]},{"$set":{"booking_status":"CONFIRMED"}})
@@ -295,8 +317,7 @@ def hello_world():
 # ROUTE TO CREATE A USER
 @app.route('/register', methods=['POST'])
 def register():
-    ########################
-    reset_booking()
+
     ######## CHECKS #########
     if(isBlank(request.form['username']) or isBlank(request.form['roll_no']) or isBlank(request.form['first_name']) or isBlank(request.form['password']) or isBlank(request.form['address_line_1'])):
         response = {
@@ -305,7 +326,6 @@ def register():
             "data": {}
         }
         return jsonify(response)
-    
     if (user_collection.count_documents({"username": request.form['username']}) != 0):
         response = {
             "status":100,
@@ -350,9 +370,12 @@ def register():
         'roll_no': request.form['roll_no'],
         'age': int(request.form['age']),
         'gender': request.form['gender'],
+        'verified': "NOT VERIFIED",
         'address': str(request.form['address_line_1']) + ", "  + str(request.form['address_line_2']),
         'booking_ids': []
     }
+
+    ########inserting the documnet into the database##############
     user_collection.insert_one(user)
     user["_id"] = str(user["_id"])
     response = {
@@ -363,13 +386,12 @@ def register():
 
     return jsonify(response)
 
+
 ## LOGIN ENDPOINT
 ####################
-
 @app.route('/login', methods=['POST'])
 def login():
-    ##########################
-    reset_booking()
+
     ############### CHECKS ###############
     if (isBlank(request.form["username"]) or isBlank(request.form["password"])):
         response = {
@@ -398,7 +420,15 @@ def login():
         return jsonify(response)
     else: 
         global cur_user
-        cur_user = probable_user
+        if (probable_user["username"]=="admin"):
+            response = {
+                "status":1000,
+                "message": "login successful",
+                "data": {}
+            }
+            return jsonify(response)
+
+        cur_user = copy.deepcopy(probable_user)
         response = {
             "status":0,
             "message": "login successful",
@@ -411,13 +441,9 @@ def login():
 ######################################
 @app.route('/logout',methods = ["GET"])
 def logout():
-    ########################
-    reset_booking()
-
     ####### SET THE CURRENT USER TO -1
     global cur_user
     cur_user = -1
-
     response = {
             "status":0,
             "message": "Logout Successful",
@@ -425,17 +451,15 @@ def logout():
         }
     return "0"
 
-
 ####### checking availability route
-
 @app.route('/checkavailable',methods = ["POST"])
 def availability():
-    reset_booking()
     global checkindate
     global checkoutdate
     checkindate = datetime.strptime(request.form['checkindate'], "%Y-%m-%d")
     checkoutdate = datetime.strptime(request.form['checkoutdate'], "%Y-%m-%d")
     message = "Showing availability between the provided checkin and checkout dates"
+
     if (checkindate.date() < datetime.now().date()):
         checkindate = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d")
         message = "Check-in date is in the past showing availability from now to Checkout"
@@ -468,40 +492,29 @@ def availability():
 
 @app.route('/initiatebooking',methods=["POST"])
 def initiatebooking():
-    print(request.form)
-    response = {
-        "status" : 0,
-        "message" : "Fetched successfully",
-        "data" : initiatecurrbooking(request.form)
-    }
+    if (cur_user["verified"] != "VERIFIED"):
+        response = {
+            "status": 100,
+            "message": "USER IS NOT VERIFIED BY ADMIN",
+            "data": {}
+        }
+        return jsonify(response)
+    response =  initiatecurrbooking(request.form)
+
     return jsonify(response)
 
 @app.route('/addingindividual', methods = ["POST"])
 def addindividuals():
-    print(request.form)
-    response = {
-        "status" : 0,
-        "message" : "Fetched successfully",
-        "data" : addindividualstocurr(request.form)
-    }
-
+    response = addindividualstocurr(request.form)
     return jsonify(response)
-
 
 @app.route('/payment_done',methods = ["POST"])
 def payment_done():
-    print(request.form)
-    reponse = {
-        "status" : 0,
-        "message" : "Fetched successfully",
-        "data" : payment_completion(request.form)
-    }
-
+    reponse =  payment_completion(request.form)
     return jsonify(reponse)
 
 @app.route('/cancellation',methods=["POST"])
 def cancellation():
-    reset_booking()
     print(request.form)
     response = {
         "status" : 0,
@@ -521,6 +534,12 @@ def get_profile():
         }
         return jsonify(response)
     else:
+        list_of_ids = cur_user["booking_ids"]
+        cur_user["bookings"] = []
+        for booking_id in list_of_ids:
+            booking = booking_collection.find_one({"_id":ObjectId(booking_id)})
+            booking["_id"] = str(booking["_id"])
+            cur_user["bookings"].append(copy.deepcopy(booking))
         response = {
             "status": 0,
             "message": "fetched user details",
@@ -563,10 +582,18 @@ def set_feedback():
     return jsonify(response)
 
 #### admin features
-@app.route('/get_all_users', methods=["POST"])
+@app.route('/get_all_users', methods=["GET"])
 def get_all_users():
+    
+    if (user_collection.count_documents({}) == 0):
+        response = {
+            "status": 100,
+            "message": "User Already Kicked Out",
+            "data": {}
+        }
+        return jsonify(response)
     data = []
-    for user in user_collection.find({}):
+    for user in user_collection.find({"username": {"$ne": "admin"}}):
         user["_id"] = str(user["_id"])
         data.append(user)
 
@@ -577,8 +604,16 @@ def get_all_users():
     }
     return jsonify(response)
 
-@app.route('/get_all_bookings', methods=["POST"])
+@app.route('/get_all_bookings', methods=["GET"])
 def get_all_bookings():
+    print(request.form)
+    if (booking_collection.count_documents({}) == 0):
+        response = {
+            "status": 100,
+            "message": "Booking collection is empty",
+            "data": {}
+        }
+        return jsonify(response)
     data = []
     for booking in booking_collection.find({}):
         booking["_id"] = str(booking["_id"])
@@ -593,6 +628,16 @@ def get_all_bookings():
 
 @app.route('/kick_user',methods= ["POST"])
 def kick_user():
+
+    if (user_collection.count_documents({"_id":ObjectId(request.form["user_id"])})==0):
+        response = {
+            "status": 100,
+            "message": "User Already Kicked Out",
+            "data": {}
+        }
+        return jsonify(response)
+    
+
     user_id = request.form["user_id"]
     for user in user_collection.find({"_id": ObjectId(user_id)}):
         for booking_id in user["booking_ids"]:
@@ -607,7 +652,29 @@ def kick_user():
 
     return jsonify(response)
 
+@app.route('/verify_user',methods = ["POST"])
+def verify_user():
+    print("********************")
+    print(request.form)
+    print("********************")
+    if (user_collection.count_documents({"_id":ObjectId(request.form["user_id"])})==0):
+        response = {
+            "status": 100,
+            "message": "Internal Server Error",
+            "data": {}
+        }
+        return jsonify(response)
+    
+    user_id = request.form["user_id"]
 
+    user_collection.update_one({"_id":ObjectId(user_id)},{"$set":{"verified": "VERIFIED"}})
+    response = {
+        "status": 0,
+        "message": "User verified",
+        "data": {}
+    }
+
+    return jsonify(response)
 
 # START THE APP
 if __name__ == '__main__':

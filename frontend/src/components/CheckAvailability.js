@@ -3,6 +3,7 @@ import './CheckAvailability.css';
 import axios from 'axios';
 import CheckAvailabilitycard from './Checkavailabilitycard';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer,toast } from 'react-toastify';
 function CheckAvailability() {
     const navigate=useNavigate()
   const [startDate, setStartDate] = useState('');
@@ -33,7 +34,7 @@ const handlesubmitbooking = async(event,info) => {
     console.log(info.available)
   
     console.log(formAfterBook); // This will log the updated state
-  
+
     try {
       const response = await axios({
         method: 'post',
@@ -41,17 +42,24 @@ const handlesubmitbooking = async(event,info) => {
         data: formAfterBook, // Use formAfterBook instead of formAfterBooking
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      navigate('/book');
+      console.log(response)
+      if(response.data.status===0){
+        console.log(response.data.status)
+      navigate('/book')
+      }
+    else{
+        alert(response.data.message)
+    }
     } catch (error) {
       console.error('Error submitting form data:', error);
       // Add error handling here, like displaying an error message to the user
     }
+
   };
   
 
   const handleSubmit = async(event) => {
     event.preventDefault();
-
     // Construct the data object to send to the backend
     const formData = {
       checkindate: startDate,
@@ -80,7 +88,6 @@ const handlesubmitbooking = async(event,info) => {
         // Add error handling here, like displaying an error message to the user
       }
 
-      console.log("response after "+{responseafter})
     // Send the formData to the backend, you can use fetch or axios for this
   };
 
@@ -129,16 +136,11 @@ const handlesubmitbooking = async(event,info) => {
             <p>AVAILABILITY</p>
             {responseafter.map((each,index)=>(
                <div key={index} className="blog-preview">
-                <CheckAvailabilitycard/>
                 <h1>{each.description}</h1>
                 <h2>Air-Conditioned={each.AC} ,Availability={each.available},Floor={each.floor} </h2>
                 <h2>Price=Rs{each.price_per_day}/- per day </h2>
                 <h2>No Of persons per room={each.Occupancy}</h2>
-
                 <button onClick={(e)=>handlesubmitbooking(e,each)}>BOOK</button>
-                {each.trying&&(<div>
-                    <h1>hello</h1>
-                </div>)}
                </div>
             ))}
         </div>

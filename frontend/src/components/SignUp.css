@@ -1,9 +1,15 @@
 /* App.css */
 .SignApp {
   display: flex;
-  justify-content: center;
+  background-image: url('/Users/jeevanvarmakonduri/Desktop/softyproject/SOFTWARE_OGHBS/frontend/src/components/waiting-room-unfocused.jpg');
   align-items: center;
-  height: 120vh;
+  justify-content: center;
+  height:120vh;
+  /* background-image: url('vgh.jpg'); Replace 'path/to/your/image.jpg' with the path to your image */
+  /* opacity: 0.5; */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
 }
 
 .Sign-container {

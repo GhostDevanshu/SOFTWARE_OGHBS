@@ -12,7 +12,7 @@ const UserNavbar = () => {
       })
       .catch((err) => {
       });
-  }, );
+  }, []);
 
 
     return (
@@ -21,14 +21,14 @@ const UserNavbar = () => {
         <div className="links">
 
           <a href="/home">Home</a>
-          <a href="/profile">Bookings</a>
+          <a href="/profile">Profile/Bookings</a>
           <a href="/checkavailable">Book Now</a>
           
           <a href="/" style={{ 
             color: 'white', 
             backgroundColor: '#f1356d',
             borderRadius: '8px' 
-          }}>LOG OUT</a>
+           }} >LOG OUT</a>
         </div>
       </nav>
     );

@@ -13,14 +13,14 @@ import ForUser from './components/ForUser';
 import CheckAvailability from './components/CheckAvailability';
 import Booking from './components/Booking';
 import Payment from './Payment';
+import AdminNavbar from './components/AdminNavbar';
+import Allusers from './components/Allusers';
+import ShowBookings from './components/ShowBookings';
+import AdminHome from './components/AdminHome';
 function App() {
   
   // const {info} =useUser();
-  const info = {
-    first_name:"abc",
-    last_name:"abc@abc",
-    race:"abc"
-  }
+
   const router =createBrowserRouter([
     
    {
@@ -58,6 +58,18 @@ function App() {
    {
     path:'/getpayment',
     element:<div><UserNavbar/><Payment/></div>
+   },
+   {
+    path:'/admin',
+    element:<div><AdminNavbar/><AdminHome/></div>
+   },
+   {
+    path:'/allusers',
+    element:<div><AdminNavbar/><Allusers/></div>
+   },
+   {
+    path:'/allbookings',
+    element:<div><AdminNavbar/><ShowBookings/></div>
    }
   ])
   return (

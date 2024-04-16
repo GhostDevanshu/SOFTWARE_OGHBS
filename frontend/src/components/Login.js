@@ -4,7 +4,6 @@ import axios from 'axios';
 import Profile from './Profile';
 import { useNavigate } from 'react-router-dom';
 import UserNavbar from './UserNavbar';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 function Login() {
   const navigate = useNavigate();
@@ -13,6 +12,8 @@ function Login() {
     password: '',
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
 
   const handlechange = (e) => {
     setFormdatalogin((prevState) => ({
@@ -23,6 +24,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       const response = await axios({
         method: 'post',
@@ -30,13 +32,25 @@ function Login() {
         data: formlogin,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      
       console.log('Response data:', response.data);
       console.log('Response data:', response.data.data);
       console.log('Response data:', response.data.message);
+      
+      setPopupMessage(response.data.message);
+      setShowPopup(true);
+
       if (response.data.status === 0) {
+        alert(response.data.message)
         navigate('/home');
         console.log('dnfoosf');
-      } else {
+      } 
+      else if(response.data.status===1000){
+        alert("Admin Login")
+        navigate('/admin')
+      }
+      else {
+        alert(response.data.message)
         setErrorMessage('Incorrect credentials. Please try again.');
       }
     } catch (error) {
@@ -56,6 +70,7 @@ function Login() {
             value={formlogin.username}
             onChange={handlechange}
             placeholder="Username"
+            required
           />
           <input
             type="password"
@@ -63,13 +78,20 @@ function Login() {
             value={formlogin.password}
             onChange={handlechange}
             placeholder="Password"
+            required
           />
           <button className="Loginbutton" type="submit">
             Login
           </button>
-          {errorMessage && <p className="error-message" >{errorMessage }</p>}
           <a href="/signup">Don't have an account ?</a>
         </form>
+        {showPopup && (
+          <div className="popup">
+            <div className="popup-content">
+              <p>{popupMessage}</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

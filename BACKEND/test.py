@@ -30,6 +30,8 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from datetime import datetime, timedelta
 from pymongo import ASCENDING,DESCENDING
+from bson import ObjectId
+
 load_dotenv()
 # LOADING THE DATABASE
 DB_URI = "mongodb+srv://devanshuagrawal99:Devanshu@oghbssw.rvaadkh.mongodb.net/?retryWrites=true&w=majority&appName=OGHBSSW"
@@ -50,11 +52,14 @@ room_collection = db.room_collection
 user_collection = db.user_collection
 booking_collection = db.booking_collection
 
-rooms = room_collection.find({}).sort("_id", DESCENDING)
+# rooms = room_collection.find({}).sort("_id", DESCENDING)
 
-for room in rooms: 
-    print(room)
+# for room in rooms: 
+#     print(room)
 
+id = input("ENTER THE BOOKING ID:")
+
+booking_collection.update_one({"_id":ObjectId(id)},{"$set":{"booking_status":"COMPLETED"}})
 
 
 

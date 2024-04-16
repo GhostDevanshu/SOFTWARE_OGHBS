@@ -148,27 +148,28 @@ if (user_collection.count_documents({}) == 0):
     user_collection.insert_one(admin)
 
 def reset():
+    db["booking_collection"].drop()
     db["food_options"].drop()
     db["room_collection"].drop()
     db["guest_house_collection"].drop()
-
+    db["user_collection"].drop()
     food_options.insert_many(food_options_list)
     room_collection.insert_many(rooms)
     guest_house_collections.insert_many(guest_houses)
+    user_collection.insert_one(admin)
 
 reset()
 # test space
-    
-prev_bookings = {
-    "2024-03-29":{
-        "DBS AC": 0,
-        "DBS NAC": 0,
-        "DR AC": 0
-    },
-    "2024-04-05":{
-        "DBS AC": 0,
-        "DBS NAC": 2,
-        "DR AC": 0
-    }
-}
-guest_house_collections.update_one({"code":"VGH"},{'$set': {'prev_bookings': prev_bookings}})
+# prev_bookings = {
+#     "2024-03-29":{
+#         "DBS AC": 0,
+#         "DBS NAC": 0,
+#         "DR AC": 0
+#     },
+#     "2024-04-05":{
+#         "DBS AC": 0,
+#         "DBS NAC": 2,
+#         "DR AC": 0
+#     }
+# }
+# guest_house_collections.update_one({"code":"VGH"},{'$set': {'prev_bookings': prev_bookings}})

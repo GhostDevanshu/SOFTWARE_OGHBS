@@ -67,10 +67,6 @@ function Booking() {
     };
 
 
-
-
-        
-    
     return (
         <div className="booking-container">
             <form onSubmit={handleSubmit} className="booking-form">
@@ -91,16 +87,30 @@ function Booking() {
                                     className="booking-input"
                                 />
                             </label>
-                            <label className="booking-label">
-                                <input
-                                    placeholder='Gender'
-                                    type="text"
-                                    value={peopleInfo[index]?.gender || ''}
-                                    onChange={(event) => handleInfoChange(index, 'gender', event.target.value)}
-                                    required
-                                    className="booking-input"
-                                />
-                            </label>
+                            <div className="booking-radio-group">
+    <label className="booking-radio-label">
+        <input
+            type="radio"
+            name={`gender-${index}`}
+            value="Male"
+            checked={peopleInfo[index]?.gender === 'Male'}
+            onChange={(event) => handleInfoChange(index, 'gender', event.target.value)}
+            className="booking-radio-input"
+        />
+        Male
+    </label>
+    <label className="booking-radio-label">
+        <input
+            type="radio"
+            name={`gender-${index}`}
+            value="Female"
+            checked={peopleInfo[index]?.gender === 'Female'}
+            onChange={(event) => handleInfoChange(index, 'gender', event.target.value)}
+            className="booking-radio-input"
+        />
+        Female
+    </label>
+</div>
                             <label className="booking-label">
                                 <input
                                     placeholder='Age'
@@ -122,7 +132,7 @@ function Booking() {
                                 />
                             </label>
                             <label className="date-label">
-          Guest House:
+          Food:
           <select
             value={peopleInfo[index]?.food||''}
             onChange={(event) => handleInfoChange(index,'food',event.target.value)}

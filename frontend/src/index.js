@@ -7,7 +7,7 @@ import CheckAvailability from './components/CheckAvailability';
 import UserNavbar from './components/UserNavbar';
 import Booking from './components/Booking';
 import Payment from './Payment';
-
+import PopupMessage from './components/Rough';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

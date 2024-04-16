@@ -1,0 +1,16 @@
+.notification {
+    background-color: #f44336; /* Red background color */
+    color: white; /* White text color */
+    text-align: center; /* Centered text */
+    padding: 15px; /* Padding */
+    position: fixed; /* Fixed position */
+    top: 0; /* Position from the top */
+    left: 0; /* Position from the left */
+    width: 100%; /* Full width */
+    z-index: 1; /* Make sure it appears on top of other elements */
+  }
+  
+  .notification p {
+    margin: 0; /* Remove margin */
+  }
+  

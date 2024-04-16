@@ -1,0 +1,20 @@
+/* Styles for the Profile page */
+.profile {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+.profile h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.profile div {
+    margin-bottom: 5px;
+}
+
+.profile strong {
+    font-weight: bold;
+    color: #007bff; /* Blue color for the strong element */
+}
